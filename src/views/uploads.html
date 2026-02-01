@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Uploads - Medical Device OCR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        .upload-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+        
+        .device-id {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .upload-time {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .location {
+            background: #f1f5f9;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .test-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .test-type {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .test-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .test-time {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+        
+        .confidence {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.85em;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: opacity 0.2s;
+        }
+        
+        .btn:hover {
+            opacity: 0.8;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 15px;
+        }
+        
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>📊 All Uploads</h1>
+            <p id="count-text">Loading...</p>
+        </div>
+        <a href="/" class="back-button">← Back to Home</a>
+    </div>
+    
+    <div id="uploads-container" class="loading">
+        Loading uploads...
+    </div>
+    
+    <script>
+        async function loadUploads() {
+            try {
+                const response = await fetch('/api/uploads');
+                const result = await response.json();
+                
+                const container = document.getElementById('uploads-container');
+                const countText = document.getElementById('count-text');
+                
+                if (!result.success || result.data.uploads.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h2>No uploads yet</h2>
+                            <p>Upload data from your Android app to see it here</p>
+                        </div>
+                    `;
+                    countText.textContent = '0 uploads';
+                    return;
+                }
+                
+                countText.textContent = `${result.data.count} upload${result.data.count !== 1 ? 's' : ''}`;
+                
+                container.innerHTML = result.data.uploads.map(upload => `
+                    <div class="upload-card">
+                        <div class="upload-header">
+                            <div>
+                                <div class="device-id">${upload.userName}</div>
+                                <div class="upload-time">📅 ${upload.uploadTime}</div>
+                                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    🏥 ${upload.phcName} • ${upload.blockName}, ${upload.districtName}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 1.5em; font-weight: 700; color: #10b981;">${upload.testsCount}</div>
+                                <div style="font-size: 0.85em; color: #666;">tests</div>
+                            </div>
+                        </div>
+                        
+                        ${upload.uploadLocation ? `
+                            <div class="location">
+                                📍 Location: ${upload.uploadLocation.latitude.toFixed(6)}, ${upload.uploadLocation.longitude.toFixed(6)}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="tests-grid">
+                            ${upload.tests.map(test => `
+                                <div class="test-card">
+                                    <div class="test-type">${test.displayName}</div>
+                                    <div class="test-value">${test.value !== null ? test.value : 'N/A'} <span style="font-size: 0.5em;">${test.unit}</span></div>
+                                    <div class="test-time">🕐 ${test.testTime}</div>
+                                    ${test.confidence ? `<div class="confidence">Confidence: ${(test.confidence * 100).toFixed(0)}%</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="actions">
+                            <a href="${upload.pdfUrl}" class="btn btn-primary" target="_blank">📄 Download PDF</a>
+                            <a href="/upload/${upload.id}" class="btn btn-secondary">View Details</a>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                document.getElementById('uploads-container').innerHTML = `
+                    <div class="empty-state">
+                        <h2>Error loading uploads</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        loadUploads();
+    </script>
+</body>
+</html>

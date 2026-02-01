@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Device OCR Backend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .status {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .api-endpoints {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .api-endpoints h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .endpoint {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .method {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 0.85em;
+            margin-right: 15px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .method.post { background: #10b981; color: white; }
+        .method.get { background: #3b82f6; color: white; }
+        .method.delete { background: #ef4444; color: white; }
+        
+        .path {
+            font-family: 'Courier New', monospace;
+            color: #666;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #999;
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Medical Device OCR Backend</h1>
+        <p class="subtitle">Blood Test Results Management System</p>
+        
+        <div class="status">✓ Server Running</div>
+        
+        <div class="nav-grid">
+            <a href="/uploads" class="nav-button">📊 View All Uploads</a>
+            <a href="/stats" class="nav-button">📈 Statistics</a>
+            <a href="/api/uploads" class="nav-button">📋 JSON Data</a>
+            <a href="/api/stats" class="nav-button">🔢 JSON Stats</a>
+        </div>
+        
+        <div class="api-endpoints">
+            <h2>API Endpoints</h2>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/upload</span>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/uploads</span>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/upload/:id</span>
+            </div>
+            <div class="endpoint">
+                <span class="method delete">DELETE</span>
+                <span class="path">/api/upload/:id</span>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/download/pdf/:id</span>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/download/image/:id/:testName</span>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/stats</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Device ID Pattern: DPHS-X | Test Types: GLUCOSE, CREATININE, CHOLESTEROL
+        </div>
+    </div>
+</body>
+</html>
