@@ -114,15 +114,6 @@
             opacity: 0.8;
         }
         
-        .confidence {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 0.85em;
-        }
-        
         .actions {
             display: flex;
             gap: 10px;
@@ -190,7 +181,10 @@
                 const container = document.getElementById('uploads-container');
                 const countText = document.getElementById('count-text');
                 
-                if (!result.success || result.data.uploads.length === 0) {
+                // result.data is now the array directly, not wrapped
+                const uploads = result.data || [];
+                
+                if (!result.success || uploads.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <h2>No uploads yet</h2>
@@ -201,9 +195,9 @@
                     return;
                 }
                 
-                countText.textContent = `${result.data.count} upload${result.data.count !== 1 ? 's' : ''}`;
+                countText.textContent = `${uploads.length} upload${uploads.length !== 1 ? 's' : ''}`;
                 
-                container.innerHTML = result.data.uploads.map(upload => `
+                container.innerHTML = uploads.map(upload => `
                     <div class="upload-card">
                         <div class="upload-header">
                             <div>
@@ -231,7 +225,6 @@
                                     <div class="test-type">${test.displayName}</div>
                                     <div class="test-value">${test.value !== null ? test.value : 'N/A'} <span style="font-size: 0.5em;">${test.unit}</span></div>
                                     <div class="test-time">🕐 ${test.testTime}</div>
-                                    ${test.confidence ? `<div class="confidence">Confidence: ${(test.confidence * 100).toFixed(0)}%</div>` : ''}
                                 </div>
                             `).join('')}
                         </div>

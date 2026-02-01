@@ -24,7 +24,7 @@ const downloadPdf = asyncHandler(async (req, res) => {
   // Construct file path
   const filePath = path.join(
     config.upload.directory,
-    upload.deviceId,
+    upload.panelId,
     upload.monthName,
     upload.id,
     'combined_report.pdf'
@@ -82,7 +82,7 @@ const downloadImage = asyncHandler(async (req, res) => {
   // Construct file path - find the actual file
   const dirPath = path.join(
     config.upload.directory,
-    upload.deviceId,
+    upload.panelId,
     upload.monthName,
     upload.id
   );

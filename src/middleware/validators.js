@@ -81,6 +81,7 @@ const validateUpload = [
  */
 const validateGetUploads = [
   query('userId').optional().isString().withMessage('User ID must be a string'),
+  query('panelId').optional().isString().withMessage('Panel ID must be a string'),
   query('startDate').optional().isInt().withMessage('Start date must be a timestamp'),
   query('endDate').optional().isInt().withMessage('End date must be a timestamp'),
   query('month').optional().isString().withMessage('Month must be a string'),
@@ -100,6 +101,7 @@ const validateUploadId = [
  */
 const validateStats = [
   query('userId').optional().isString().withMessage('User ID must be a string'),
+  query('panelId').optional().isString().withMessage('Panel ID must be a string'),
   validate,
 ];
 

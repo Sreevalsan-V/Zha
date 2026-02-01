@@ -163,21 +163,6 @@
             color: #10b981;
         }
         
-        .confidence-bar {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-        
-        .confidence-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            transition: width 0.5s ease;
-        }
-        
         .location-map {
             background: #f8fafc;
             padding: 12px;
@@ -334,16 +319,6 @@
                                             <div class="location-map">
                                                 Latitude: ${test.testLocation.latitude.toFixed(7)}<br>
                                                 Longitude: ${test.testLocation.longitude.toFixed(7)}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    
-                                    ${test.confidence !== null ? `
-                                        <div class="detail-row">
-                                            <div class="detail-label">OCR Confidence</div>
-                                            <div class="detail-value">${(test.confidence * 100).toFixed(1)}%</div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill" style="width: ${test.confidence * 100}%"></div>
                                             </div>
                                         </div>
                                     ` : ''}

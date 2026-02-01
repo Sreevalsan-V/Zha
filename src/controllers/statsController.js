@@ -8,20 +8,22 @@ const { Op } = require('sequelize');
  * Get comprehensive statistics for uploads and tests
  */
 const getStatistics = asyncHandler(async (req, res) => {
-  const { deviceId } = req.query;
+  const { userId, panelId } = req.query;
   
   // Build where clause
-  const uploadWhere = deviceId ? { deviceId } : {};
+  const uploadWhere = {};
+  if (userId) uploadWhere.userId = userId;
+  if (panelId) uploadWhere.panelId = panelId;
   
   // Total uploads
   const totalUploads = await Upload.count({ where: uploadWhere });
   
   // Total test records
   const totalTests = await TestRecord.count({
-    include: deviceId ? [{
+    include: (userId || panelId) ? [{
       model: Upload,
       as: 'upload',
-      where: { deviceId },
+      where: uploadWhere,
       attributes: [],
     }] : [],
   });
@@ -37,13 +39,13 @@ const getStatistics = asyncHandler(async (req, res) => {
     order: [[sequelize.literal('count'), 'DESC']],
   });
   
-  // Uploads per device
-  const uploadsPerDevice = await Upload.findAll({
+  // Uploads per panel
+  const uploadsPerPanel = await Upload.findAll({
     attributes: [
-      'deviceId',
+      'panelId',
       [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
     ],
-    group: ['deviceId'],
+    group: ['panelId'],
     order: [[sequelize.literal('count'), 'DESC']],
   });
   
@@ -60,10 +62,10 @@ const getStatistics = asyncHandler(async (req, res) => {
       resultValue: { [Op.not]: null },
       isValidResult: true,
     },
-    include: deviceId ? [{
+    include: (userId || panelId) ? [{
       model: Upload,
       as: 'upload',
-      where: { deviceId },
+      where: uploadWhere,
       attributes: [],
     }] : [],
     group: ['testType'],
@@ -75,10 +77,10 @@ const getStatistics = asyncHandler(async (req, res) => {
       'testType',
       [sequelize.fn('COUNT', sequelize.col('TestRecord.id')), 'count'],
     ],
-    include: deviceId ? [{
+    include: (userId || panelId) ? [{
       model: Upload,
       as: 'upload',
-      where: { deviceId },
+      where: uploadWhere,
       attributes: [],
     }] : [],
     group: ['testType'],
@@ -102,10 +104,10 @@ const getStatistics = asyncHandler(async (req, res) => {
       [sequelize.fn('strftime', '%H', sequelize.literal('datetime(validationTimestamp / 1000, "unixepoch")')), 'hour'],
       [sequelize.fn('COUNT', sequelize.col('TestRecord.id')), 'count'],
     ],
-    include: deviceId ? [{
+    include: (userId || panelId) ? [{
       model: Upload,
       as: 'upload',
-      where: { deviceId },
+      where: uploadWhere,
       attributes: [],
     }] : [],
     group: [sequelize.fn('strftime', '%H', sequelize.literal('datetime(validationTimestamp / 1000, "unixepoch")'))],
@@ -123,10 +125,10 @@ const getStatistics = asyncHandler(async (req, res) => {
     where: {
       confidence: { [Op.not]: null },
     },
-    include: deviceId ? [{
+    include: (userId || panelId) ? [{
       model: Upload,
       as: 'upload',
-      where: { deviceId },
+      where: uploadWhere,
       attributes: [],
     }] : [],
     raw: true,
@@ -137,7 +139,7 @@ const getStatistics = asyncHandler(async (req, res) => {
     overview: {
       totalUploads,
       totalTests,
-      totalDevices: uploadsPerDevice.length,
+      totalPanels: uploadsPerPanel.length,
       avgTestsPerUpload: totalUploads > 0 ? (totalTests / totalUploads).toFixed(2) : 0,
     },
     
@@ -146,8 +148,8 @@ const getStatistics = asyncHandler(async (req, res) => {
       count: parseInt(item.getDataValue('count')),
     })),
     
-    uploadsByDevice: uploadsPerDevice.map(item => ({
-      deviceId: item.deviceId,
+    uploadsByPanel: uploadsPerPanel.map(item => ({
+      panelId: item.panelId,
       count: parseInt(item.getDataValue('count')),
     })),
     
@@ -177,7 +179,9 @@ const getStatistics = asyncHandler(async (req, res) => {
     
     recentUploads: recentUploads.map(upload => ({
       id: upload.id,
-      deviceId: upload.deviceId,
+      panelId: upload.panelId,
+      userId: upload.userId,
+      userName: upload.userName,
       uploadDateTime: upload.uploadDateTime,
       monthName: upload.monthName,
       testCount: upload.testRecords.length,

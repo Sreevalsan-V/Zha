@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Medical Device OCR System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .warning::before {
+            content: "⚠️";
+            font-size: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        thead {
+            background: #f8f9fa;
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            color: #495057;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-admin {
+            background: #dc3545;
+            color: white;
+        }
+        .badge-worker {
+            background: #28a745;
+            color: white;
+        }
+        .badge-tech {
+            background: #007bff;
+            color: white;
+        }
+        .credentials {
+            background: #e7f3ff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .password-note {
+            color: #6c757d;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+        .location-info {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .location-info strong {
+            color: #495057;
+            display: inline-block;
+            width: 80px;
+        }
+        .empty-field {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        .filled-field {
+            color: #28a745;
+        }
+        .nav-links {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            float: right;
+        }
+        .refresh-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 User Management</h1>
+            <p>Medical Device OCR System - Development Dashboard</p>
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="/uploads">View Uploads</a>
+                <a href="/stats">Statistics</a>
+            </div>
+        </div>
+
+        <div class="warning">
+            <div>
+                <strong>Development Only:</strong> This page displays sensitive user information including login credentials. 
+                Do not expose this in production environments.
+            </div>
+        </div>
+
+        <div id="stats" class="stats"></div>
+
+        <div class="card">
+            <h2>All Users</h2>
+            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Password (Plaintext)</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Contact</th>
+                        <th>Location Details</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>Quick Login Credentials</h3>
+            <div id="quickCredentials"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/auth/users/list');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message);
+                }
+
+                const users = data.data;
+                displayStats(users);
+                displayUsers(users);
+                displayQuickCredentials(users);
+            } catch (error) {
+                document.getElementById('usersBody').innerHTML = 
+                    `<tr><td colspan="7" style="text-align: center; color: red;">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function displayStats(users) {
+            const statsHtml = `
+                <div class="stat-card">
+                    <h3>${users.length}</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${users.filter(u => u.role === 'Health Worker').length}</h3>
+                    <p>Health Workers</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${users.filter(u => u.role === 'Lab Technician').length}</h3>
+                    <p>Lab Technicians</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${users.filter(u => u.role === 'Administrator').length}</h3>
+                    <p>Administrators</p>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersBody');
+            
+            tbody.innerHTML = users.map(user => {
+                const roleClass = user.role === 'Administrator' ? 'badge-admin' : 
+                                 user.role === 'Health Worker' ? 'badge-worker' : 'badge-tech';
+                
+                const hasCompleteData = user.phcName && user.hubName && user.blockName && user.districtName;
+                const statusBadge = hasCompleteData 
+                    ? '<span class="badge" style="background: #28a745; color: white;">✓ Complete</span>'
+                    : '<span class="badge" style="background: #dc3545; color: white;">⚠ Incomplete</span>';
+
+                const locationHtml = `
+                    <div class="location-info">
+                        <div><strong>PHC:</strong> ${user.phcName ? `<span class="filled-field">${user.phcName}</span>` : '<span class="empty-field">NOT SET</span>'}</div>
+                        <div><strong>Hub:</strong> ${user.hubName ? `<span class="filled-field">${user.hubName}</span>` : '<span class="empty-field">NOT SET</span>'}</div>
+                        <div><strong>Block:</strong> ${user.blockName ? `<span class="filled-field">${user.blockName}</span>` : '<span class="empty-field">NOT SET</span>'}</div>
+                        <div><strong>District:</strong> ${user.districtName ? `<span class="filled-field">${user.districtName}</span>` : '<span class="empty-field">NOT SET</span>'}</div>
+                    </div>
+                `;
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>${user.username}</strong>
+                            <button class="copy-btn" onclick="copyText('${user.username}')">Copy</button>
+                        </td>
+                        <td>
+                            <span class="credentials">${user.plainPassword || 'Unknown'}</span>
+                            <button class="copy-btn" onclick="copyText('${user.plainPassword}')">Copy</button>
+                            <div class="password-note">Hash stored in DB</div>
+                        </td>
+                        <td><strong>${user.name}</strong><br><small>${user.id}</small></td>
+                        <td><span class="badge ${roleClass}">${user.role}</span></td>
+                        <td>
+                            ${user.email ? `📧 ${user.email}<br>` : ''}
+                            ${user.phoneNumber ? `📱 ${user.phoneNumber}` : ''}
+                        </td>
+                        <td>${locationHtml}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function displayQuickCredentials(users) {
+            const html = users.map(user => `
+                <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <strong>${user.name}</strong> (${user.role})
+                    <br>
+                    <span class="credentials">
+                        Username: ${user.username} | Password: ${user.plainPassword || 'Unknown'}
+                    </span>
+                    <button class="copy-btn" onclick="copyCredentials('${user.username}', '${user.plainPassword}')">
+                        Copy Both
+                    </button>
+                </div>
+            `).join('');
+            document.getElementById('quickCredentials').innerHTML = html;
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied: ' + text);
+            });
+        }
+
+        function copyCredentials(username, password) {
+            const text = `Username: ${username}\nPassword: ${password}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Credentials copied to clipboard!');
+            });
+        }
+
+        // Load users on page load
+        loadUsers();
+    </script>
+</body>
+</html>

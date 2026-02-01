@@ -302,10 +302,7 @@ const getUploads = asyncHandler(async (req, res) => {
   
   res.json(
     ApiResponse.success(
-      {
-        uploads: formattedUploads,
-        count: formattedUploads.length,
-      },
+      formattedUploads,  // Return array directly
       'Uploads retrieved successfully'
     )
   );
@@ -397,7 +394,7 @@ const deleteUpload = asyncHandler(async (req, res) => {
   await upload.destroy();
   res.json(
     ApiResponse.success(
-      { deletedId: id },
+      null,  // Return null instead of object
       'Upload deleted successfully'
     )
   );
