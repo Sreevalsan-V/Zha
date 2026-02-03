@@ -11,6 +11,9 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Login - POST /api/auth/login
 router.post('/login', authController.login);
 
+// Get current user data (requires authentication) - GET /api/auth/me
+router.get('/me', authMiddleware, authController.getProfile);
+
 // Get profile (requires authentication) - GET /api/auth/profile
 router.get('/profile', authMiddleware, authController.getProfile);
 

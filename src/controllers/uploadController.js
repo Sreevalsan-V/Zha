@@ -16,14 +16,23 @@ const config = require('../config/config');
 const createUpload = asyncHandler(async (req, res) => {
   const { upload, tests, pdfBase64 } = req.body;
   
+  // DEBUG: Log received data
+  console.log('=== UPLOAD REQUEST RECEIVED ===');
+  console.log('Upload object:', JSON.stringify(upload, null, 2));
+  console.log('Tests count:', tests ? tests.length : 'undefined');
+  console.log('PDF present:', !!pdfBase64);
+  console.log('================================');
+  
   // Validate required fields
   if (!upload || !tests || !pdfBase64) {
+    console.error('VALIDATION ERROR: Missing required fields');
     return res.status(400).json(
       ApiResponse.error('Missing required fields: upload, tests, or pdfBase64', 400)
     );
   }
   
   if (!Array.isArray(tests) || tests.length === 0 || tests.length > 3) {
+    console.error('VALIDATION ERROR: Invalid tests array');
     return res.status(400).json(
       ApiResponse.error('Tests must be an array with 1-3 items', 400)
     );
@@ -31,6 +40,7 @@ const createUpload = asyncHandler(async (req, res) => {
   
   // Validate panelId format
   if (!upload.panelId || !upload.panelId.match(/^DPHS-\d+$/)) {
+    console.error('VALIDATION ERROR: Invalid panelId:', upload.panelId);
     return res.status(400).json(
       ApiResponse.error('panelId is required and must match pattern DPHS-{number} (e.g., "DPHS-1")', 400)
     );
@@ -40,6 +50,8 @@ const createUpload = asyncHandler(async (req, res) => {
   const requiredUserFields = ['userId', 'userName', 'phcName', 'hubName', 'blockName', 'districtName'];
   for (const field of requiredUserFields) {
     if (!upload[field] || !upload[field].trim()) {
+      console.error(`VALIDATION ERROR: Missing or empty field: ${field}`);
+      console.error(`Field value: "${upload[field]}"`);
       return res.status(400).json(
         ApiResponse.error(`Missing or empty required field: ${field}`, 400)
       );
